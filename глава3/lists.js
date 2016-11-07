@@ -35,7 +35,6 @@ function listToArray(list) {
 
 function nth(list, position) {
   var element;
-  var count = 0;
   if (position == 0) element = list.value;
   for (var i = 0; i < position; i++) {
     if (list.rest != null) {
@@ -47,7 +46,17 @@ function nth(list, position) {
   return element;
 }
 
-
+function nthReqursion(list, position) { //доделать
+  var element;
+  var count = 0;
+  if (position == 0) element = list.value;
+  else if ((position != 0)) {
+    nthReqursion(list.rest, position -= 1);
+    count++;
+  }
+  return position;
+}
 
 console.log(listToArray(arrayToList([10,20,30])));
-console.log(nth(arrayToList([10,20,30]),1));
+console.log(nth(arrayToList([10,20,30]),2));
+console.log(nthReqursion(arrayToList([10,20,30]),2));
