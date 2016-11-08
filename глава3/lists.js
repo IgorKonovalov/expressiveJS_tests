@@ -8,13 +8,13 @@
 //     }
 //   }
 // };
-function prepend(value, list) {
+function prepend(value, list) { // добавляет новый элемент списка в качестве первого
   list = {value: value, rest: list}
   return list;
 }
 var list_temp = { value: 10, rest: { value: 20, rest: null } };
 
-function arrayToList(array) {
+function arrayToList(array) { // вывод массива в список
   var list = null;
   for (var i = array.length - 1; i >= 0; i--) {
     list = prepend(array[i],list);
@@ -22,7 +22,7 @@ function arrayToList(array) {
   return list;
 }
 
-function listToArray(list) {
+function listToArray(list) { //вывод списка в массив
   var array = [];
   while (list.rest != null) {
     array.push(list.value);
@@ -46,12 +46,12 @@ function nth(list, position) {
   return element;
 }
 
-function nthReqursion(list, position) { // доделать
-  if (list == null) return undefined;
+function nthReqursion(list, position) {
+  if (!list) return undefined;
   else if (position != 0) return nthReqursion(list.rest, position - 1);
   else return list.value;
 }
 
 console.log(listToArray(arrayToList([10,20,30])));
 console.log(nth(arrayToList([10,20,30]),2));
-console.log(nthReqursion(arrayToList([10,20,30,40,50]),0));
+console.log(nthReqursion(arrayToList([10,20,30,40,50]),10));
