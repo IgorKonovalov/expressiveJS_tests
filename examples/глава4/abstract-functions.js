@@ -24,6 +24,34 @@ console.log(sum);
 
 // стандартная запись
 
+var journal = require('../главы1-3/journal.js')
+
+console.log(journal);
+
+function phi(table) { // подсчет переменной phi - вероятность события при условии, таблица (2 x 2)
+  return (table[3] * table[0] - table[2] * table [1])/
+    Math.sqrt((table[2] + table[3])
+  *           (table[0] + table[1])
+  *           (table[1] + table[3])
+  *           (table[0] + table[2]));
+}
+
+function tableFor(event, journal) { // создаем таблицу для вычисления переменной phi
+  var table = [0, 0, 0, 0];
+  for (var i = 0; i < journal.length; i++){
+    var entry = journal[i], index = 0;
+    if (hasEvent(event, entry)) index += 1;
+    if (entry.squirrel) index +=2;
+    table[index] += 1;
+  }
+  return table;
+}
+
+
+function hasEvent(event, entry) { // проверяем, есть ли условие в записи
+  return entry.events.indexOf(event) != -1;
+}
+
 function gatherCorrelations(journal) {
   var phis = {};
   for (var entry = 0; entry < journal.length; entry++) {
@@ -40,17 +68,19 @@ function gatherCorrelations(journal) {
 
 // с форичем (является стандартной фичей масивов)
 
-function gatherCorrelations(journal) {
+function gatherCorrelationsAbstract(journal) {
   var phis = {};
-  journal.forEach(function (entry) {
-    entry.events.forEach(function (event) {
-      if (!event in phis) {
+  journal.forEach(function(entry) {
+    entry.events.forEach(function(event) {
+      if (!(event in phis)) {
         phis[event] = phi(tableFor(event, journal));
       }
     });
   });
   return phis;
 }
+
+// console.log(gatherCorrelationsAbstract(journal));
 
 // функция, создающая новые функции
 
@@ -75,7 +105,7 @@ function noisy(f) {
   };
 }
 
-noisy(Boolean)(1);
+noisy(Boolean)(0);
 
 // функция, создающая новые типы управления потоком выполнения программы (это даже почти понятно)
 
