@@ -9,22 +9,39 @@ function average(array) {
   return array.reduce(plus) / array.length;
 }
 
-var centures = {};
-var i = 0;
-
-ancestry.forEach(function (person) {
-  age = Math.ceil(person.died / 100);
-  if (!(age in centures))
-    centures[age] = age;
-});
-
-for (var age in centures) {
-  var temp = [];
-  ancestry.forEach(function (person) {
-    var agetemp = Math.ceil(person.died / 100);
-    if (agetemp == age)
-      temp.push(person.died - person.born);
+function makeObjectCentures(array) {
+  var centures = {};
+  array.forEach(function (person) {
+    age = Math.ceil(person.died / 100);
+    if (!(age in centures))
+      centures[age] = age;
   });
-  centures[age] = temp;
+  return centures;
 }
-console.log(centures);
+
+function groupBy(array, test) {
+  var result = test(array);
+  for (var age in result) {
+    var temp = [];
+    array.forEach(function (person) {
+      var agetemp = Math.ceil(person.died / 100);
+      if (agetemp == age)
+        temp.push(person.died - person.born);
+    });
+    result[age] = average(temp);
+  }
+  return result;
+}
+
+console.log(groupBy(ancestry, makeObjectCentures));
+
+// for (var age in centures) {
+//   var temp = [];
+//   ancestry.forEach(function (person) {
+//     var agetemp = Math.ceil(person.died / 100);
+//     if (agetemp == age)
+//       temp.push(person.died - person.born);
+//   });
+//   centures[age] = average(temp);
+// }
+// console.log(centures);
