@@ -2,7 +2,6 @@ var ANCESTRY_FILE = require('./ancestry.js');
 
 var ancestry = JSON.parse(ANCESTRY_FILE);
 
-
 var byName = {};
 
 ancestry.forEach(function(person){
