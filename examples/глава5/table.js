@@ -9,21 +9,21 @@ var mountains = require('./mountains.js');
 
 function rowHeights(rows) { // вычисление массива минимальной высоты строк
   return rows.map(function (row) { // возвращает массив, к каждому элементу которого применена функция
-    return row.reduce(function (max, cell) { // получающая максимальную высоту из всех ячеек
+    return row.reduce(function (max, cell) { // получающая максимальную высоту массива ячеек
       return Math.max(max, cell.minHeight());
     }, 0);
   });
 }
 
 function colWidths(rows) { // вычисление массива минимальной ширины ячеек
-  return rows[0].map(function (_, i) {
-    return rows.reduce(function (max, row) {
-      return Math.max(max, row[i].minWidth());
+  return rows[0].map(function (_, i) { // первый аргумент не будет использоваться, второй - индекс текущего массива (i)
+    return rows.reduce(function (max, row) { // проходит по внешнему массиву rows для каждого индекса и выбирает ширину
+      return Math.max(max, row[i].minWidth()); // широчайшей ячейки в этом индексе
     }, 0);
   });
 }
 
-function drawTable(rows) {
+function drawTable(rows) { // вывод таблицы
   var heights = rowHeights(rows);
   var widths = colWidths(rows);
 
@@ -33,13 +33,13 @@ function drawTable(rows) {
     }).join(" ");
   }
 
-  function drawRow(row, rowNum) {
-    var blocks = row.map(function(cell, colNum) {
+  function drawRow(row, rowNum) {  //рисует строки, соединяя их через символы новой строки
+    var blocks = row.map(function(cell, colNum) { // превращает обьекты ячеек строки в блоки. colNum - индекс текушего массива
       return cell.draw(widths[colNum], heights[rowNum]);
     });
     return blocks[0].map(function(_, lineNo) {
       return drawLine(blocks, lineNo);
-    }).join("\n");
+    }).join("\n"); // соединение через символы новой строки
   }
 
   return rows.map(drawRow).join("\n");
@@ -53,9 +53,10 @@ function repeat(string, times) {
   return result;
 }
 
-function TextCell(text) { // обычная ячейка
+function TextCell(text) { // Конструктор обычной ячейки
   this.text = text.split("\n");
 }
+
 TextCell.prototype.minWidth = function() { // метод, возвращающий минимально возможную ширину ячейки
   return this.text.reduce(function(width, line) {
     return Math.max(width, line.length);
@@ -73,13 +74,13 @@ TextCell.prototype.draw = function(width, height) {
   return result;
 };
 
-function UnderlinedCell(inner) { // ячейка с подчеркиванием
-  this.inner = inner;
+function UnderlinedCell(inner) { // ячейка с подчеркиванием,
+  this.inner = inner; // создает новый объект на базе внутреннего, см использование
 }
-UnderlinedCell.prototype.minWidth = function() {
+UnderlinedCell.prototype.minWidth = function() { // обращается к методам внутреннего объекта
   return this.inner.minWidth();
 };
-UnderlinedCell.prototype.minHeight = function() {
+UnderlinedCell.prototype.minHeight = function() { // изменяет метод внутреннего объекта
   return this.inner.minHeight() + 1;
 };
 UnderlinedCell.prototype.draw = function(width, height) {
@@ -88,10 +89,10 @@ UnderlinedCell.prototype.draw = function(width, height) {
 };
 
 function RTextCell(text) { // ячейка со сдвигом к правому краю, наследуется от TextCell
-  TextCell.call(this, text);
+  TextCell.call(this, text); // к родителю обращается через стандартную функцию call
 }
-RTextCell.prototype = Object.create(TextCell.prototype);
-RTextCell.prototype.draw = function (width, height) {
+RTextCell.prototype = Object.create(TextCell.prototype); // наследует все методы родителя
+RTextCell.prototype.draw = function (width, height) { // и переопределяет метод draw для создания пробелов слева
   var result = [];
   for (var i = 0; i < height; i++) {
     var line = this.text[i] || "";
@@ -102,7 +103,7 @@ RTextCell.prototype.draw = function (width, height) {
 
 function dataTable(data) {
   var keys = Object.keys(data[0]);
-  var headers = keys.map(function (name) {
+  var headers = keys.map(function (name) { // здесь name - экземпляр массива, над которым с данный момент работает функция
     return new UnderlinedCell(new TextCell(name));
   });
   var body = data.map(function (row) {
