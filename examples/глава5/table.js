@@ -75,7 +75,7 @@ TextCell.prototype.draw = function(width, height) {
 };
 
 function UnderlinedCell(inner) { // ячейка с подчеркиванием,
-  this.inner = inner; // создает новый объект на базе внутреннего, см использование
+  this.inner = inner; // создает новый объект на базе внутреннего, см использование (композиция)
 }
 UnderlinedCell.prototype.minWidth = function() { // обращается к методам внутреннего объекта
   return this.inner.minWidth();
