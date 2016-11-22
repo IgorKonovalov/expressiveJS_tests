@@ -11,7 +11,7 @@ var plan = ["############################",
             "#    #                     #",
             "############################"];
 
-function Vector(x, y) {
+function Vector(x, y) { // вспомогательный объект, координаты
   this.x = x;
   this.y = y;
 }
@@ -69,8 +69,10 @@ function randomElement(array) {
   return array[Math.floor(Math.random() * array.length)];
 }
 
+// первая версия существа, deprecated
+
 function BouncingCritter() {
-  this.direction = randomElement(Object.keys(directions)); // получаем все имена направлений из объекта
+  this.direction = randomElement(Object.keys(directions)); // одно рандомное направление из объекта-списка
 };
 
 BouncingCritter.prototype.act = function(view) {
@@ -164,14 +166,14 @@ View.prototype.findAll = function(ch) {
   var found = [];
   for (var dir in directions)
     if (this.look(dir) == ch)
-      found.push(dir);
+      found.push(dir); // возвращает массив векторов, удовлетворяющих условию ch
   return found;
 };
 View.prototype.find = function(ch) {
   var found = this.findAll(ch);
   if (found.length == 0)
     return null;
-  return randomElement(found);
+  return randomElement(found); // возвращает случайный элемент из массива векторов
 };
 
 // для анимации сложная функция без обьяснений и она не работает хз почему
@@ -361,9 +363,25 @@ PlantEater.prototype.act = function(context) {
     return {type: "move", direction: space};
 };
 
+function SmartPlantEater() {
+  this.energy = 30;
+  this.direction = "e";
+}
+
+SmartPlantEater.prototype.act = function(context) {
+  var space = context.find(" ");
+  if (this.energy > 90 && space)
+    return {type: "reproduce", direction: space};
+  var plants = context.findAll("*");
+  if (plants.length > 1)
+    return {type: "eat", direction: randomElement(plants)};
+  if (context.look(this.direction) != " " && space)
+    this.direction = space;
+  return {type: "move", direction: space};
+}
 // о дивный новый мир!
 
-var valley = new LifelikeWorld(
+animateWorld(new LifelikeWorld(
   ["############################",
    "#####                 ######",
    "##   ***                **##",
@@ -377,7 +395,6 @@ var valley = new LifelikeWorld(
    "##****     ###***       *###",
    "############################"],
   {"#": Wall,
-   "O": PlantEater,
+   "O": SmartPlantEater,
    "*": Plant}
-);
-animateWorld(valley);
+));
