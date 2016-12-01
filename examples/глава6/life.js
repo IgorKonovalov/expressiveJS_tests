@@ -176,7 +176,7 @@ View.prototype.find = function(ch) {
   return randomElement(found); // возвращает случайный элемент из массива векторов
 };
 
-// для анимации сложная функция без обьяснений и она не работает хз почему
+// для анимации - работает только в браузере(обьект window)
 
 (function() {
   "use strict";
@@ -370,7 +370,7 @@ function SmartPlantEater() {
 
 SmartPlantEater.prototype.act = function(context) {
   var space = context.find(" ");
-  if (this.energy > 90 && space)
+  if (this.energy > 60 && space)
     return {type: "reproduce", direction: space};
   var plants = context.findAll("*");
   if (plants.length > 1)
@@ -381,20 +381,77 @@ SmartPlantEater.prototype.act = function(context) {
 }
 // о дивный новый мир!
 
+// animateWorld(new LifelikeWorld(
+//   ["############################",
+//    "#####                 ######",
+//    "##   ***                **##",
+//    "#   *##**         **  O  *##",
+//    "#    ***     O    ##**    *#",
+//    "#       O         ##***    #",
+//    "#                 ##**     #",
+//    "#   O       #*             #",
+//    "#*          #**       O    #",
+//    "#***        ##**    O    **#",
+//    "##****     ###***       *###",
+//    "############################"],
+//   {"#": Wall,
+//    "O": SmartPlantEater,
+//    "*": Plant}
+// ));
+
+// объект - хищник, метод praySeen подсмотрен в ответах
+
+function Tiger() {
+  this.energy = 100;
+  this.direction = "w";
+  this.preySeen = []; // массив используется для отслеживания, видно ли SmartPlantEater за последние 6 ходов
+}
+Tiger.prototype.act = function(view) {
+  // Average number of prey seen per turn
+  var seenPerTurn = this.preySeen.reduce(function(a, b) {
+    return a + b;
+  }, 0) / this.preySeen.length;
+  var prey = view.findAll("O");
+  this.preySeen.push(prey.length);
+  // Drop the first element from the array when it is longer than 6
+  if (this.preySeen.length > 6)
+    this.preySeen.shift();
+
+  // Only eat if the predator saw more than ¼ prey animal per turn
+  if (prey.length && seenPerTurn > 0.25)
+    return {type: "eat", direction: randomElement(prey)};
+
+  var space = view.find(" ");
+  if (this.energy > 400 && space)
+    return {type: "reproduce", direction: space};
+  if (view.look(this.direction) != " " && space)
+    this.direction = space;
+  return {type: "move", direction: this.direction};
+};
+
+// о, дивный новый мир - 2
+
 animateWorld(new LifelikeWorld(
-  ["############################",
-   "#####                 ######",
-   "##   ***                **##",
-   "#   *##**         **  O  *##",
-   "#    ***     O    ##**    *#",
-   "#       O         ##***    #",
-   "#                 ##**     #",
-   "#   O       #*             #",
-   "#*          #**       O    #",
-   "#***        ##**    O    **#",
-   "##****     ###***       *###",
-   "############################"],
+  ["####################################################",
+   "#                 ####         ****              ###",
+   "#   *  @  ##                 ########       OO    ##",
+   "#   *    ##        O O                 ****       *#",
+   "#       ##*                        ##########     *#",
+   "#      ##***  *         ****                     **#",
+   "#* **  #  *  ***      #########                  **#",
+   "#* **  #      *               #   *              **#",
+   "#     ##              #   O   #  ***          ######",
+   "#*            @       #       #   *        O  #    #",
+   "#*                    #  ######                 ** #",
+   "###          ****          ***                  ** #",
+   "#       O                        @         O       #",
+   "#   *     ##  ##  ##  ##               ###      *  #",
+   "#   **         #              *       #####  O     #",
+   "##  **  O   O  #  #    ***  ***        ###      ** #",
+   "###               #   *****                    ****#",
+   "####################################################"],
   {"#": Wall,
-   "O": SmartPlantEater,
+   "@": Tiger,
+   "O": SmartPlantEater, // from previous exercise
    "*": Plant}
 ));
