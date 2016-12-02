@@ -21,7 +21,6 @@ function withBoxUnlocked(body) {
     box.lock();
   }
 }
-
 withBoxUnlocked(function() {
   box.content.push('золотишко');
 });
