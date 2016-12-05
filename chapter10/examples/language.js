@@ -203,7 +203,7 @@ specialForms["fun"] = function(args, env) { // расценивает после
 
 // задача 1 - добавление в окружение функции массивов.
 
-topEnv["array"] = function(args) {
+topEnv["array"] = function() {
   return Array.prototype.slice.call(arguments, 0); // мы превращаем массивоподобный объект в настоящий массив
   // см https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice
 };
