@@ -1,3 +1,6 @@
+//
+// Парсер
+//
 function parseExpression(program) {
   program = skipSpace(program);
   var match, expr; // создает объекты регулярного выражение и объект, куда будет скопирован код после парсинга
@@ -13,10 +16,10 @@ function parseExpression(program) {
   return parseApply(expr, program.slice(match[0].length)); // обработанная часть передается дальше..
 }
 
-function skipSpace(string) { // удаляет пробелы в начале строки
-  var first = string.search(/\S/);
-  if (first == -1) return "";
-  return string.slice(first);
+
+function skipSpace(string) { // удаляет пробелы в начале строки, игнорирует строку если там есть комментарии
+  var skip = string.match(/^(\s|#.*)*/);
+  return string.slice(skip[0].length); //  0 элемент - это первое полное вхождение совпадения
 }
 
 function parseApply(expr, program) { // определяет, является ли обработанная часть программы выражением
@@ -89,10 +92,10 @@ specialForms["if"] = function(args, env) {
   if (args.length != 3)
     throw new SyntaxError("Неправильное количество аргументов для if");
 
-  if (evaluate(args[0], env) !== false) // похоже на ?:.
+  if (evaluate(args[0], env) !== false) // похоже на ?:. - если верно первое выражение, возвращает второе,
     return evaluate(args[1], env);
   else
-    return evaluate(args[2], env);
+    return evaluate(args[2], env); // если неверно - то третье
 };
 
 specialForms["while"] = function(args, env) {
@@ -144,6 +147,9 @@ topEnv["print"] = function(value) { // оборачиваем вывод
 };
 
 
+// проверка - в конце
+
+
 function run() { // создает свежее окружение, парсит и разбирает строчки так, как будто они являются одной программой
   var env = Object.create(topEnv);
   var program = Array.prototype.slice
@@ -151,9 +157,104 @@ function run() { // создает свежее окружение, парсит
   return evaluate(parse(program), env);
 }
 
-// run("do(define(total, 0),",      // -> 55 работает! 
+// run("do(define(total, 0),",      // -> 55 работает!
 //     "   define(count, 1),",
 //     "   while(<(count, 11),",
 //     "         do(define(total, +(total, count)),",
 //     "            define(count, +(count, 1)))),",
 //     "   print(total))");
+
+
+specialForms["fun"] = function(args, env) { // расценивает последний аргумент как тело функции, а все предыдущие - имена аргументов
+  if (!args.length)
+    throw new SyntaxError("Функции нужно тело");
+  function name(expr) {
+    if (expr.type != "word")
+      throw new SyntaxError("Имена аргументов должны быть words");
+    return expr.name;
+  }
+  var argNames = args.slice(0, args.length - 1).map(name); // имена аргументов - все кроме последнего
+  var body = args[args.length - 1]; // последний аргумент - тело функции
+
+  return function() { // собираем функцию
+    if (arguments.length != argNames.length)
+      throw new TypeError("Неверное количество аргументов");
+    var localEnv = Object.create(env); // локальное окружение является объектом
+    for (var i = 0; i < arguments.length; i++)
+      localEnv[argNames[i]] = arguments[i];
+    return evaluate(body, localEnv);
+  };
+};
+
+// простая проверка работоспособности функций
+
+// run("do(define(plusOne, fun(a, +(a, 1))),", // функция, складывающая числа
+//     "   print(plusOne(10)))");
+//
+// run("do(define(pow, fun(base, exp,", // функция, возводящая в степень - еще и рекурсивная
+//     "     if(==(exp, 0),",
+//     "        1,",
+//     "        *(base, pow(base, -(exp, 1)))))),",
+//     "   print(pow(2, 10)))");
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// задача 1 - добавление в окружение функции массивов.
+
+topEnv["array"] = function(args) {
+  return Array.prototype.slice.call(arguments, 0); // мы превращаем массивоподобный объект в настоящий массив
+  // см https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice
+};
+
+topEnv["length"] = function(array) {
+  return array.length;
+};
+
+topEnv["element"] = function(array, element) {
+  return array[element];
+};
+
+
+// run("do(define(sum, fun(array,",
+//     "     do(define(i, 0),",
+//     "        define(sum, 0),",
+//     "        while(<(i, length(array)),",
+//     "          do(define(sum, +(sum, element(array, i))),",
+//     "             define(i, +(i, 1)))),",
+//     "        sum))),",
+//     "   print(sum(array(1, 2, 3))))");
+
+// задача 2 - потому что объект локального окружения при сборке функции имеет в качестве прототипа переданный в функции
+// обьект окружения, то есть функция, вложенная в другую будет иметь доступ к локальной переменной, объявленной
+// внутри этой функции тк она наследуется от нее.
+
+// задача 3
+// skipSpace - изменения см. вверху
+// console.log(parse("# hello\nx"));
+
+// задача 4
+
+specialForms["set"] = function(args, env) {
+  if (args.length != 2 || args[0].type != "word")
+    throw new SyntaxError("Неправильное использование set");
+  var name = args[0].name;
+  var value = evaluate(args[1], env);
+
+  for (var scope = env; scope; scope = Object.getPrototypeOf(scope)) { // РАЗОБРАТЬСЯ!
+    if (Object.prototype.hasOwnProperty.call(scope, name)) {
+      scope[name] = value;
+      return value;
+    }
+  }
+
+  throw new ReferenceError("Вначале определите " + name + " с помощью define");
+};
+
+run("do(define(x, 4),",
+    "   define(setx, fun(val, set(x, val))),",
+    "   setx(50),",
+    "   print(x))");
+
+run("set(quux, true)");
