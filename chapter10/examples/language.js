@@ -242,14 +242,14 @@ specialForms["set"] = function(args, env) {
   var name = args[0].name;
   var value = evaluate(args[1], env);
 
-  for (var scope = env; scope; scope = Object.getPrototypeOf(scope)) { // РАЗОБРАТЬСЯ!
-    if (Object.prototype.hasOwnProperty.call(scope, name)) {
-      scope[name] = value;
+  for (var scope = env; scope; scope = Object.getPrototypeOf(scope)) { // проходит по стеку функций и если находит переменную с тем же
+    if (Object.prototype.hasOwnProperty.call(scope, name)) { // переменную с тем же именем
+      scope[name] = value; // перезаписывает ее
       return value;
     }
   }
 
-  throw new ReferenceError("Вначале определите " + name + " с помощью define");
+  throw new ReferenceError("Вначале определите переменную " + name + " с помощью define");
 };
 
 run("do(define(x, 4),",
