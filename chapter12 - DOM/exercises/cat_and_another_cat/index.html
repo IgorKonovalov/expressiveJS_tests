@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <img src="img/cat.jpeg" id="cat" style="position: absolute">
+  <img src="img/cat2.jpeg" id="another_cat" style="position: absolute">
+
+  <script>
+    var cat = document.querySelector("#cat");
+    var cat2 = document.querySelector("#another_cat");
+
+    var angle = 0, lastTime = null;
+
+    function animate(time) {
+      if (lastTime != null)
+        angle += (time - lastTime) * 0.001;
+      lastTime = time;
+      cat1top = 300 + (Math.sin(angle) * 20);
+      cat1left = 400 + (Math.cos(angle) * 200);
+      cat.style.top = cat1top + "px";
+      cat.style.left = cat1left + "px";
+
+      cat2.style.top = cat1top + (Math.sin(angle) * 150) + "px";
+      cat2.style.left = cat1left + (Math.cos(angle) * 150) + "px";
+
+      requestAnimationFrame(animate);
+    }
+    requestAnimationFrame(animate);
+
+  </script>
+</body>
+</html>
