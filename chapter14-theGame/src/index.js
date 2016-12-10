@@ -106,7 +106,7 @@ function elt(name, className) { // создание элемента с зада
   return elt;
 }
 
-function DOMDisplay(parent, Level) {
+function DOMDisplay(parent, level) {
   this.wrap = parent.appendChild(elt("div", "game")); // создаем окружающий элемент wrapper и сразу соъраняем в переменной
   this.level = level;
 
@@ -149,3 +149,33 @@ DOMDisplay.prototype.drawFrame = function () {
   this.wrap.className = "game" + (this.level.status || "");
   this.scrollPlayerIntoView;
 };
+
+DOMDisplay.prototype.scrollPlayerIntoView = function () { // сдвигаем экран относительно положения игрока
+  var width = this.wrap.clientWidth;
+  var height = this.wrap.clientHeight;
+  var margin = width / 3;
+
+  // точка зрения
+
+  var left = this.wrap.scrollLeft, right = left + width;
+  var top = this.scroll.scrollTop, bottom = top + height;
+
+  var player = this.level.player;
+  var center = player.pos.plus(player.size.times(0.5)).times(scale);
+
+  if (center.x < left + margin)
+    this.wrap.scrollLeft = center.x - margin;
+  else if (center.c > right - margin)
+    this.wrap.scrollLeft = center.x + margin - width;
+  if (center.y < top + margin)
+    this.wrap.scrollTop = center.y - margin;
+  else if (center.y > bottom - margin)
+    this.wrap.scrollTop = center.y + margin - height;
+};
+
+DOMDisplay.prototype.clear = function () {
+  this.wrap.parentNode.removeChild(this.wrap);
+};
+
+var simpleLevel = new Level(simpleLevelPlan);
+var display = new DOMDisplay(document.body, simpleLevel);
