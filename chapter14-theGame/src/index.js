@@ -64,11 +64,11 @@ Player.prototype.type = "player";
 function Lava(pos, ch) {
   this.pos = pos;
   this.size = new Vector(1, 1);
-  if (ch == "=") {
+  if (ch == "=") { // движение влево-вправо
     this.speed = new Vector(2, 0);
-  } else if (ch == "|") {
+  } else if (ch == "|") { // движение вверх - вниз
     this.speed = new Vector(0, 2);
-  } else if (ch == "v") {
+  } else if (ch == "v") { // капля
     this.speed = new Vector(0, 3);
     this.repeatPos = pos;
   }
@@ -295,16 +295,21 @@ Level.prototype.playerTouched = function(type, actor) { // и наконец м�
 const arrowCodes = {37: "left", 38: "up", 39: "right", 32: "pause"};
 
 function trackKeys(codes) {
-  let pressed = Object.create(null);
+  var pressed = Object.create(null);
   function handler(event) {
     if (codes.hasOwnProperty(event.keyCode)) {
-      let down = event.type == "keydown";
-      pressed[codes[event.keyCode]] = down;
+      var state = event.type == "keydown";
+      pressed[codes[event.keyCode]] = state;
       event.preventDefault();
     }
   }
   addEventListener("keydown", handler);
   addEventListener("keyup", handler);
+
+  pressed.unregister = function() { // cнять бинды
+    removeEventListener("keydown", handler);
+    removeEventListener("keyup", handler);
+  };
   return pressed;
 }
 
@@ -325,45 +330,62 @@ function runAnimation(frameFunc) {
 
 let arrows = trackKeys(arrowCodes);
 
-function runLevel(level, Display, andThen) {
-  let display = new Display(document.body, level);
-  runAnimation(function(step) {
+function runLevel(level, Display, andThen) { // уровень имеет 3 разных state - yes no pausing
+  var display = new Display(document.body, level);
+  var running = "yes";
+  function handleKey(event) {
+    if (event.keyCode == 27) {
+      if (running == "no") {
+        running = "yes";
+        runAnimation(animation);
+      } else if (running == "pausing") {
+        running = "yes";
+      } else if (running == "yes") {
+        running = "pausing";
+      }
+    }
+  }
+  addEventListener("keydown", handleKey);
+  var arrows = trackKeys(arrowCodes);
+
+  function animation(step) {
+    if (running == "pausing") {
+      running = "no";
+      return false;
+    }
+
     level.animate(step, arrows);
     display.drawFrame(step);
     if (level.isFinished()) {
       display.clear();
+      // Here we remove all our event handlers
+      removeEventListener("keydown", handleKey);
+      arrows.unregister(); // (see change to trackKeys below)
       if (andThen)
         andThen(level.status);
       return false;
     }
-  });
+  }
+  runAnimation(animation);
 }
 
 
-
 function runGame(plans, Display) {
-  let lives = 2;
-
   function startLevel(n, lives) {
     runLevel(new Level(plans[n]), Display, function(status) {
-      console.log(lives);
-      if (!lives) {
-        alert("жизни кончились - начинай сначала");
-        lives = 2;
-        startLevel(0, lives);
-      }
-      else {
-        if (status == "lost") {
-          lives = lives - 1;
-          startLevel(n, lives);
+      if (status == "lost") {
+        if (lives > 0) {
+          startLevel(n, lives - 1);
+        } else {
+          console.log("Game over");
+          startLevel(0, 3);
         }
-        else if (n < plans.length - 1)
-          startLevel(n + 1, lives);
-        else
-          alert("You win!");
+      } else if (n < plans.length - 1) {
+        startLevel(n + 1, lives);
+      } else {
+        console.log("You win!");
       }
     });
   }
-  startLevel(0, lives);
-  console.log(lives + 1);
+  startLevel(0, 3);
 }
