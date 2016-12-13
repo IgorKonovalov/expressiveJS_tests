@@ -330,7 +330,7 @@ function runAnimation(frameFunc) {
 
 let arrows = trackKeys(arrowCodes);
 
-function runLevel(level, Display, andThen) { // уровень имеет 3 разных state - yes no pausing
+function runLevel(level, Display, andThen) { 
   var display = new Display(document.body, level);
   var running = "yes";
   function handleKey(event) {

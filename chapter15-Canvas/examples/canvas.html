@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <canvas></canvas>
+  <script type="text/javascript">
+     var cx = document.querySelector("canvas").getContext("2d");
+
+    // cx.strokeStyle = "blue";
+    // cx.fillStyle = "red";
+    // cx.fillRect(5, 5, 50, 50);
+    // cx.lineWidth = 5;
+    // cx.strokeRect(135, 5, 50, 50);
+
+    cx.beginPath();
+    cx.moveTo(10, 90);
+    cx.quadraticCurveTo(60, 10, 90, 90);
+    cx.lineTo(60, 10);
+    cx.closePath();
+    cx.stroke();
+
+
+  </script>
+</body>
+</html>
