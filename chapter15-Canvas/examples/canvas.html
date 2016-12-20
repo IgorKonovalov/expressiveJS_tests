@@ -7,24 +7,41 @@
   <title>Document</title>
 </head>
 <body>
-  <canvas></canvas>
+  <canvas width="1000" height="1000"></canvas>
   <script type="text/javascript">
-     var cx = document.querySelector("canvas").getContext("2d");
 
-    // cx.strokeStyle = "blue";
-    // cx.fillStyle = "red";
-    // cx.fillRect(5, 5, 50, 50);
-    // cx.lineWidth = 5;
-    // cx.strokeRect(135, 5, 50, 50);
+    let cx = document.querySelector("canvas").getContext("2d");
 
-    cx.beginPath();
-    cx.moveTo(10, 90);
-    cx.quadraticCurveTo(60, 10, 90, 90);
-    cx.lineTo(60, 10);
-    cx.closePath();
-    cx.stroke();
+    let results = [
+      {name: "Удовлетворительно", count: 1043, color: "lightblue"},
+      {name: "Нейтральное", count: 563, color: "lightgreen"},
+      {name: "Не удовлетворен", count: 510, color: "pink"},
+      {name: "Без комментариев", count: 175, color: "silver"}
+    ];
 
+    let total = results.reduce(function(sum, choice) {
+      return sum + choice.count;
+    }, 0);
+    let currentAngle = - .5 * Math.PI;
+    cx.font = "20px Georgia";
+    let textx = 50;
+    let texty = 50;
 
+    results.forEach(function(result) {
+      let sliceAngle = (result.count / total) * 2 * Math.PI;
+      cx.beginPath();
+      cx.arc(200, 200, 100,
+             currentAngle, currentAngle + sliceAngle);
+      currentAngle += sliceAngle;
+      cx.fillStyle = result.color;
+
+      textx =  150 + 180 * Math.cos(currentAngle);
+      texty =  200 + 150 * Math.sin(currentAngle);
+      console.log(textx + "  " + texty);
+      cx.fillText(result.name, textx, texty);
+      cx.lineTo(200, 200);
+      cx.fill();
+    });
   </script>
 </body>
 </html>

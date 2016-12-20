@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <style>
+    canvas {
+      background-color: #ff0000;
+    }
+  </style>
+  <canvas width="600" height="400"></canvas>
+  <script>
+    let cx = document.querySelector("canvas").getContext("2d");
+    function spiral(x, y) {
+      let radius = 100, xCenter = x + radius, yCenter = y + radius;
+      cx.beginPath();
+      cx.moveTo(xCenter, yCenter);
+      for (let i = 0; i < 300; i++) {
+        let angle = i * Math.PI / 30;
+        let dist = radius * i / 300;
+        cx.lineTo(xCenter + Math.cos(angle) * dist,
+                  yCenter + Math.sin(angle) * dist);
+      }
+      cx.stroke();
+    }
+    spiral(340, 20);
+  </script>
+</body>
+</html>
