@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <style>
+    canvas {
+      background: black;
+    }
+  </style>
+  <canvas width="800" height="600"></canvas>
+  <script>
+    let cx = document.querySelector("canvas").getContext("2d");
+    function branch(length, angle, scale) {
+      cx.fillStyle = "white";
+      cx.fillRect(0, 0, 1, length);
+      if (length < 8) return;
+      cx.save();
+      cx.translate(0, length);
+      angle = angle - 0.1;
+      cx.rotate(-angle);
+      branch(length * scale, angle, scale);
+      cx.rotate(2 * angle);
+      branch(length * scale, angle, scale);
+      cx.restore();
+    }
+    cx.translate(400, 600);
+    cx.rotate(Math.PI);
+    branch(100, 0.8, 0.8);
+  </script>
+</body>
+</html>
