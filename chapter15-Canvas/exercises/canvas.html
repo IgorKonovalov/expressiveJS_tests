@@ -30,17 +30,23 @@
     results.forEach(function(result) {
       let sliceAngle = (result.count / total) * 2 * Math.PI;
       cx.beginPath();
-      cx.arc(200, 200, 100,
+      cx.arc(400, 300, 100,
              currentAngle, currentAngle + sliceAngle);
       currentAngle += sliceAngle;
+
       cx.fillStyle = result.color;
 
-      textx =  150 + 180 * Math.cos(currentAngle);
-      texty =  200 + 150 * Math.sin(currentAngle);
-      console.log(textx + "  " + texty);
+      cx.save();
+      cx.translate(400 + 100 * Math.cos(currentAngle), 300 + 100 * Math.sin(currentAngle))
+      cx.rotate(currentAngle);
+      textx =  10;
+      texty =  -20;
       cx.fillText(result.name, textx, texty);
-      cx.lineTo(200, 200);
+      cx.restore();
+      cx.lineTo(400, 300);
+
       cx.fill();
+
     });
   </script>
 </body>
