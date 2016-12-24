@@ -9,25 +9,83 @@
 <body>
   <style>
     canvas {
-      background-color: #ff0000;
+      background-color: "white";
     }
   </style>
   <canvas width="600" height="400"></canvas>
   <script>
     let cx = document.querySelector("canvas").getContext("2d");
+
+    function inRad(num) {
+    	return num * Math.PI / 180;
+    }
+
     function spiral(x, y) {
-      let radius = 100, xCenter = x + radius, yCenter = y + radius;
+      let radius = 100, xCenter = x + radius, yCenter = y + radius; // чтобы считать не от верхнего левого угла, а от центра
       cx.beginPath();
       cx.moveTo(xCenter, yCenter);
       for (let i = 0; i < 300; i++) {
-        let angle = i * Math.PI / 30;
-        let dist = radius * i / 300;
+        let angle = i * Math.PI / 30; // угол поворота
+        let dist = radius * i / 500; // расстояние до центра
         cx.lineTo(xCenter + Math.cos(angle) * dist,
                   yCenter + Math.sin(angle) * dist);
       }
       cx.stroke();
     }
-    spiral(340, 20);
+
+    spiral(200, -30);
+
+
+    function parallelogram(x, y) {
+      cx.beginPath();
+      cx.moveTo(x, y);
+      cx.lineTo(x + 50, y);
+      cx.lineTo(x + 70, y + 50);
+      cx.lineTo(x - 20, y + 50);
+      cx.closePath();
+      cx.stroke();
+    }
+
+    parallelogram(30, 30);
+
+    function diamond(x, y) {
+      cx.beginPath();
+      cx.fillStyle = "red";
+      cx.rotate(inRad(45));
+      cx.fillRect(x, y, 50, 50);
+      cx.rotate( - inRad(45));
+    }
+
+    diamond(140, 30);
+
+    function zigzag(x, y) {
+      cx.beginPath();
+      cx.moveTo(x, y);
+      for (let i = 0; i < 10; i ++) {
+        cx.lineTo(x, y + 10 * i);
+        cx.lineTo(x + 100, y + i * 10);
+      }
+      cx.stroke();
+    }
+
+    zigzag(120, 20);
+
+    function star(x, y) { // списано, ибо хз
+      var radius = 50, xCenter = x + radius, yCenter = y + radius;
+      cx.beginPath();
+      cx.moveTo(xCenter + radius, yCenter);
+      for (var i = 1; i <= 8; i++) {
+        var angle = i * Math.PI / 4;
+        cx.quadraticCurveTo(xCenter, yCenter,
+                            xCenter + Math.cos(angle) * radius,
+                            yCenter + Math.sin(angle) * radius);
+      }
+      cx.fillStyle = "gold";
+      cx.fill();
+    }
+    star(440, 20);
+
+
   </script>
 </body>
 </html>
