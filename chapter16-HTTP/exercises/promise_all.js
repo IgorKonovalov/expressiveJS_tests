@@ -1,3 +1,6 @@
+// отличный пример на https://www.youtube.com/watch?v=2d7s3spWAzo&t=512s !!
+
+
 function all(promises) { // подсмотрено в ответах тк с промисами пока ничего не понятно
   return new Promise(function(succeed, fail) { // функция возвращает новый промис
     let results = [], pending = promises.length; // результат представлен в виде массива, в функцию так же передается массив
