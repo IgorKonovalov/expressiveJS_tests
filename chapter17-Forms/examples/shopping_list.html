@@ -1,5 +1,4 @@
 <!doctype html>
-<script src="code/promise.js"></script>
 
 Notes: <select id="list"></select>
 <button onclick="addNote()">new</button><br>
@@ -7,17 +6,18 @@ Notes: <select id="list"></select>
 </textarea>
 
 <script>
-  var list = document.querySelector("#list");
+  let list = document.querySelector("#list");
   function addToList(name) {
-    var option = document.createElement("option");
+    let option = document.createElement("option");
     option.textContent = name;
     list.appendChild(option);
   }
 
   // Initialize the list from localStorage
-  var notes = JSON.parse(localStorage.getItem("notes")) ||
+  let notes = JSON.parse(localStorage.getItem("notes")) ||
               {"shopping list": ""};
-  for (var name in notes)
+  console.log(localStorage.getItem("notes"));
+  for (let name in notes)
     if (notes.hasOwnProperty(name))
       addToList(name);
 
@@ -25,7 +25,7 @@ Notes: <select id="list"></select>
     localStorage.setItem("notes", JSON.stringify(notes));
   }
 
-  var current = document.querySelector("#currentnote");
+  let current = document.querySelector("#currentnote");
   current.value = notes[list.value];
 
   list.addEventListener("change", function() {
@@ -37,7 +37,7 @@ Notes: <select id="list"></select>
   });
 
   function addNote() {
-    var name = prompt("Note name", "");
+    let name = prompt("Note name", "");
     if (!name) return;
     if (!notes.hasOwnProperty(name)) {
       notes[name] = "";

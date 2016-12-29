@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <div></div>
+  <script>
+    let element = document.querySelector('div');
+    element.innerHTML = 'test';
+    element.addEventListener('click', function(){
+      localStorage.setItem('test', 'Clicked');
+      element.innerHTML = localStorage.getItem('test');
+    });
+    if (localStorage.getItem('test')) {
+      element.innerHTML = localStorage.getItem('test');
+      element.addEventListener('click', function(){
+        localStorage.removeItem('test');
+        element.innerHTML = 'test passed';
+      });
+    }
+  </script>
+</body>
+</html>
