@@ -1,0 +1,19 @@
+<!doctype html>
+
+<textarea id="code" style="width:50%">return "hi";</textarea>
+<br>
+<button id="button">Run</button>
+<pre id="output"></pre>
+
+<script>
+  let button = document.getElementById('button');
+  let output = document.getElementById('output');
+
+  button.addEventListener('click', function() {
+    let codeArea = document.querySelector('textarea');
+    console.log(codeArea.value);
+    output.innerHTML = '';
+    let result = new Function(codeArea.value);
+    output.innerHTML = result();
+  })
+</script>
