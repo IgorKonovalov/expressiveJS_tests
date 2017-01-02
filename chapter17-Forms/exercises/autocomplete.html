@@ -31,11 +31,10 @@
       node.textContent = term;
       node.addEventListener('click', function() {
         field.value = term;
-        let req = new XMLHttpRequest;
-        req.addEventListener('load', reqListener);
-        req.open('GET', 'https://yandex.ru/search/?lr=2&text=' + term, true); // работает только на локальном сервере
-        req.send();
-
+        // let req = new XMLHttpRequest;
+        // req.addEventListener('load', reqListener);
+        // req.open('GET', 'https://yandex.ru/search/?lr=2&text=' + term, true); // работает только на локальном сервере
+        // req.send();
         suggestions.textContent = '';
       })
       suggestions.appendChild(node);
