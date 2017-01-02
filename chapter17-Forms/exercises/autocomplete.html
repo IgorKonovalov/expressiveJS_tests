@@ -1,0 +1,46 @@
+<!doctype html>
+
+<input type="text" id="field" style="width: 25%">
+<div id="suggestions" style="cursor: pointer"></div>
+
+<script>
+  // Builds up an array with global variable names, like
+  // 'alert', 'document', and 'scrollTo'
+
+  function reqListener () {
+    showContent(this.responseText);
+  }
+
+  function showContent(msg) {
+    let elt = document.createElement("div");
+    elt.textContent = msg;
+    return document.body.appendChild(elt);
+  }
+
+  let terms = [];
+  for (let name in window) terms.push(name);
+
+  let field = document.querySelector('#field'); // # для доступа к id (вспомни CSS)
+  let suggestions = document.querySelector('#suggestions');
+
+  field.addEventListener('input', function(){
+    let match = terms.filter(term => term.indexOf(field.value) == 0); // возвращаем массив terms отфильтрованный схождением с вводными данными
+    suggestions.textContent = '';
+    match.forEach(function(term) {
+      let node = document.createElement('div');
+      node.textContent = term;
+      node.addEventListener('click', function() {
+        field.value = term;
+        let req = new XMLHttpRequest;
+        req.addEventListener('load', reqListener);
+        req.open('GET', 'https://yandex.ru/search/?lr=2&text=' + term, true); // работает только на локальном сервере
+        req.send();
+
+        suggestions.textContent = '';
+      })
+      suggestions.appendChild(node);
+    });
+  })
+
+
+</script>
