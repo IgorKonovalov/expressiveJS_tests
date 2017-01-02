@@ -23,7 +23,7 @@ for (let c = 0; c < columnCount; c++) {
 function boxRandomize() {
   boxes.forEach(function(boxRow) {
     boxRow.forEach(function(box) {
-      box.status = Math.round(Math.random());
+      box.status = Math.round(Math.random()); // 1 или 0
     });
   });
 }
@@ -34,16 +34,19 @@ boxRandomize();
 (function updateBoxOnClick() {
   document.getElementById("game").addEventListener("click", function(e) {
     let p = {x: e.offsetX, y: e.offsetY}; // обьект с позицией клика
-    boxes.forEach(function(boxcolumn) {
-      boxcolumn.forEach(function(box) {
+    boxes.forEach(function(boxRow) {
+      boxRow.forEach(function(box) {
         if (clickOnBox(p, box)) {
           if (box.status == 0) {
             box.status = 1;
+          //  console.log("нажата пустая клетка");
             updateAnimation();
           }
-          if (box.status == 1) {
+          else if (box.status == 1) {
             box.status = 0;
             updateAnimation();
+
+          //  console.log("нажата полная клетка");
           }
         };
       });
@@ -52,7 +55,10 @@ boxRandomize();
 })();
 
 function updateAnimation() {
-  draw();
+  cx.clearRect(0, 0, cx.canvas.width, cx.canvas.height);
+  drawBoxes(boxes);
+  drawGrid();
+  console.log("рисую");
 }
 
 function drawBoxes(boxes) {
@@ -78,6 +84,7 @@ function clickOnBox(p, box) {
            p.y < box.y ||
            p.x > box.x + scale ||
            p.y > box.y + scale);
+
 }
 
 
@@ -102,7 +109,6 @@ function draw() {
   cx.clearRect(0, 0, cx.canvas.width, cx.canvas.height);
   drawBoxes(boxes);
   drawGrid();
-  console.log("рисую");
 };
 
 draw();
