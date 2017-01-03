@@ -2,7 +2,7 @@
 // начальные константы
 
 const cx = document.querySelector("canvas").getContext("2d");
-const scale = 10; // в будущем будет меняться
+const scale = 20; // в будущем будет меняться
 const rowCount = Math.floor(cx.canvas.height / scale);
 const columnCount = Math.floor(cx.canvas.width / scale);
 const color = "#0095DD";
@@ -100,7 +100,7 @@ function updateField() {
   cx.clearRect(0, 0, cx.canvas.width, cx.canvas.height);
   drawBoxes(boxes);
   drawGrid();
-  console.log("обновляю поле");
+  console.log("обновляю");
 }
 
 // логика
@@ -272,7 +272,7 @@ function isAlive(boxes, column, row) {
 
 // кнопки
 
-let bNext = document.getElementById("step");
+const bNext = document.getElementById("step");
 bNext.addEventListener("click", function () {
   getNextStep(boxes)
   boxCopy(boxes, boxesNextStep);
@@ -280,11 +280,27 @@ bNext.addEventListener("click", function () {
   cleanNextStep(boxesNextStep);
 });
 
-let bRandom = document.getElementById("random");
+const bRandom = document.getElementById("random");
 bRandom.addEventListener("click", function () {
   boxRandomize();
   updateField();
 });
+
+const bStart = document.getElementById("start");
+bStart.addEventListener("click", function () {
+  let speedValue = document.getElementById("speed").value;
+  timer = setInterval(function() {
+    getNextStep(boxes)
+    boxCopy(boxes, boxesNextStep);
+    updateField();
+    cleanNextStep(boxesNextStep);
+  }, speedValue * 100);
+})
+
+const bPause = document.getElementById("pause");
+bPause.addEventListener("click", function () {
+  clearInterval(timer);
+})
 
 // начальный запуск
 
