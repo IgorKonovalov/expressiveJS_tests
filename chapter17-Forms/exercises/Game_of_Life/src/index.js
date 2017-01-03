@@ -2,7 +2,7 @@
 // начальные константы
 
 const cx = document.querySelector("canvas").getContext("2d");
-const scale = 40; // в будущем будет меняться
+const scale = 10; // в будущем будет меняться
 const rowCount = Math.floor(cx.canvas.height / scale);
 const columnCount = Math.floor(cx.canvas.width / scale);
 const color = "#0095DD";
