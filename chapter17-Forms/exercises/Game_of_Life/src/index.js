@@ -133,11 +133,141 @@ function boxCopy(boxes, boxesNextStep) {
   return boxes;
 }
 
+function cleanNextStep(boxesNextStep) {
+  for (let c = 0; c < columnCount; c++) {
+    boxesNextStep[c] = [];
+    for (let r = 0; r < rowCount; r++) {
+      boxesNextStep[c][r] = {x: 0, y: 0, status: 0};
+    }
+  }
+  return boxesNextStep;
+}
+
 function isAlive(boxes, column, row) {
   let livecount = 0;
-  if (column == 0) {
-    
+  let around = [];
+  if ((column != 0) && (column != columnCount-1) && (row != 0) && (row != rowCount -1)) {
+  //  console.log("внутри");
+    around = [
+      boxes[column][row-1].status,
+      boxes[column+1][row-1].status,
+      boxes[column+1][row].status,
+      boxes[column+1][row+1].status,
+      boxes[column][row+1].status,
+      boxes[column-1][row+1].status,
+      boxes[column-1][row].status,
+      boxes[column-1][row-1].status
+    ];
+  } else if ((column == 0)&&(row == 0)) {
+  //  console.log("лево верх");
+    around = [
+      boxes[column][rowCount-1].status,
+      boxes[column+1][rowCount-1].status,
+      boxes[column+1][row].status,
+      boxes[column+1][row+1].status,
+      boxes[column][row+1].status,
+      boxes[columnCount-1][row+1].status,
+      boxes[columnCount-1][row].status,
+      boxes[columnCount-1][rowCount-1].status
+    ];
+  } else if ((column == columnCount -1)&&(row == rowCount-1)) {
+  //  console.log("право низ");
+    around = [
+      boxes[column][row-1].status,
+      boxes[0][row-1].status,
+      boxes[0][row].status,
+      boxes[0][0].status,
+      boxes[column][0].status,
+      boxes[column-1][0].status,
+      boxes[column-1][row].status,
+      boxes[column-1][row-1].status
+    ];
+  } else if ((column == 0)&&(row == rowCount -1 )) {
+  //  console.log("лево низ");
+    around = [
+      boxes[column][row-1].status,
+      boxes[column+1][row-1].status,
+      boxes[column+1][row].status,
+      boxes[column+1][0].status,
+      boxes[column][0].status,
+      boxes[columnCount-1][0].status,
+      boxes[columnCount-1][row].status,
+      boxes[columnCount-1][row-1].status
+    ];
+  } else if ((column == columnCount - 1) && (row == 0)) {
+  //  console.log("право верх");
+    around = [
+      boxes[column][rowCount-1].status,
+      boxes[0][rowCount-1].status,
+      boxes[0][row].status,
+      boxes[0][row+1].status,
+      boxes[column][row+1].status,
+      boxes[column-1][row+1].status,
+      boxes[column-1][row].status,
+      boxes[column-1][rowCount-1].status
+    ];
+  } else if (row == 0){
+  //  console.log("верхняя полоса");
+    around = [
+      boxes[column][rowCount-1].status,
+      boxes[column+1][rowCount-1].status,
+      boxes[column+1][row].status,
+      boxes[column+1][row+1].status,
+      boxes[column][row+1].status,
+      boxes[column-1][row+1].status,
+      boxes[column-1][row].status,
+      boxes[column-1][rowCount-1].status
+    ];
+  } else if (column == 0) {
+  //  console.log("левая полоса");
+    around = [
+      boxes[column][row-1].status,
+      boxes[column+1][row-1].status,
+      boxes[column+1][row].status,
+      boxes[column+1][row+1].status,
+      boxes[column][row+1].status,
+      boxes[columnCount-1][row+1].status,
+      boxes[columnCount-1][row].status,
+      boxes[columnCount-1][row-1].status
+    ];
+  } else if (row == rowCount-1){
+  //  console.log("нижняя полоса");
+    around = [
+      boxes[column][row-1].status,
+      boxes[column+1][row-1].status,
+      boxes[column+1][row].status,
+      boxes[column+1][0].status,
+      boxes[column][0].status,
+      boxes[column-1][0].status,
+      boxes[column-1][row].status,
+      boxes[column-1][row-1].status
+    ];
+  } else if (column == columnCount-1) {
+  //  console.log("правая полоса");
+    around = [
+      boxes[column][row-1].status,
+      boxes[0][row-1].status,
+      boxes[0][row].status,
+      boxes[0][row+1].status,
+      boxes[column][row+1].status,
+      boxes[column-1][row+1].status,
+      boxes[column-1][row].status,
+      boxes[column-1][row-1].status
+    ];
   }
+  livecount = around.reduce((a, b) => a + b);
+  if ((boxes[column][row].status == 1)&&(livecount == 2)) {
+    return 1;
+  } else if ((livecount <= 2)) {
+    return 0;
+  } else if ((boxes[column][row].status == 1)&&(livecount == 3)) {
+    return 1;
+  } else if (livecount > 3) {
+    return 0;
+  } else if ((boxes[column][row].status == 0)&&(livecount == 3)) {
+    return 1;
+  } else console.log("что то не так" + livecount);
+
 }
 
 // кнопки
@@ -147,6 +277,7 @@ bNext.addEventListener("click", function () {
   getNextStep(boxes)
   boxCopy(boxes, boxesNextStep);
   updateField();
+  cleanNextStep(boxesNextStep);
 });
 
 let bRandom = document.getElementById("random");
