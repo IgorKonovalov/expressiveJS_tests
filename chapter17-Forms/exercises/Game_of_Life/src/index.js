@@ -28,8 +28,6 @@ function boxRandomize() {
   });
 }
 
-boxRandomize();
-
 
 (function updateBoxOnClick() {
   document.getElementById("game").addEventListener("click", function(e) {
@@ -39,14 +37,11 @@ boxRandomize();
         if (clickOnBox(p, box)) {
           if (box.status == 0) {
             box.status = 1;
-          //  console.log("нажата пустая клетка");
-            updateAnimation();
+            updateField();
           }
           else if (box.status == 1) {
             box.status = 0;
-            updateAnimation();
-
-          //  console.log("нажата полная клетка");
+            updateField();
           }
         };
       });
@@ -54,11 +49,11 @@ boxRandomize();
   });
 })();
 
-function updateAnimation() {
+function updateField() {
   cx.clearRect(0, 0, cx.canvas.width, cx.canvas.height);
   drawBoxes(boxes);
   drawGrid();
-  console.log("рисую");
+  console.log("обновляю поле");
 }
 
 function drawBoxes(boxes) {
@@ -84,7 +79,6 @@ function clickOnBox(p, box) {
            p.y < box.y ||
            p.x > box.x + scale ||
            p.y > box.y + scale);
-
 }
 
 
@@ -111,12 +105,14 @@ function draw() {
   drawGrid();
 };
 
-draw();
+updateField();
 
-let button = document.getElementById("test");
-console.log(button);
-button.addEventListener("click", function () {
-  console.log("нажал");
+// кнопки
+
+
+let bRandom = document.getElementById("random");
+bRandom.addEventListener("click", function () {
+  boxRandomize();
+  updateField();
   draw();
 });
-// поехали!
