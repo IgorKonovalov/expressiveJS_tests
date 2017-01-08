@@ -248,6 +248,7 @@ function changeColor(cx, x, y) {
   let data = cx.getImageData(x, y, 1, 1);
   cx.fillStyle = "rgb(" + data.data[0] + ", " + data.data[1] + ", " + data.data[2] + ")";
   cx.strokeStyle = "rgb(" + data.data[0] + ", " + data.data[1] + ", " + data.data[2] + ")";
+  console.log(cx.fillStyle);
 };
 
 tools["Pick color"] = function (event, cx) {
