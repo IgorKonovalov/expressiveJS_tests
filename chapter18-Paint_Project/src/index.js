@@ -54,7 +54,7 @@ function relativePos(event, element) { // показывает относите�
           y: Math.floor(event.clientY - rect.top)};
 }
 
-function trackDrag(onMove, onEnd) { // регистрирует и убирает событие для инструментов, слушающих mousemove пока кнопка мыши нажата - два аргумента, функция, вызываемая на нажатии и отпускании
+function trackDrag(onMove, onEnd) { // регистрирует и убирает событие для инструментов, слушающих mousemove пока кнопка мыши нажата - два аргумента, функция, вызываемая на нажатии и вызываемая на отпускании
   function end(event) {
     removeEventListener("mousemove", onMove);
     removeEventListener("mouseup", end);
@@ -209,7 +209,61 @@ function randomPointInRadius(radius) {
   }
 }
 
+// Задания
 
-// простая проверка
+// 1 - Прямоугольники - из ответов
+
+function rectangleFrom(a, b) { // чтобы можно было рисовать справа налево и вверх
+  return {left: Math.min(a.x, b.x),
+          top: Math.min(a.y, b.y),
+          width: Math.abs(a.x - b.x),
+          height: Math.abs(a.y - b.y)};
+}
+
+tools.Rectangle = function(event, cx) {
+  let relativeStart = relativePos(event, cx.canvas);
+  let pageStart = {x: event.pageX, y: event.pageY};
+
+  let trackingNode = document.createElement("div");
+  trackingNode.style.position = "absolute";
+  trackingNode.style.background = cx.fillStyle;
+  document.body.appendChild(trackingNode);
+
+  trackDrag(function(event) {
+    let rect = rectangleFrom(pageStart, {x: event.pageX, y: event.pageY});
+    trackingNode.style.left = rect.left + "px";
+    trackingNode.style.top = rect.top + "px";
+    trackingNode.style.width = rect.width + "px";
+    trackingNode.style.height = rect.height + "px";
+  }, function(event) {
+    let rect = rectangleFrom(relativeStart, relativePos(event, cx.canvas));
+    cx.fillRect(rect.left, rect.top, rect.width, rect.height);
+    document.body.removeChild(trackingNode);
+  });
+};
+
+// 2 - ColorAt
+
+function changeColor(cx, x, y) {
+  let data = cx.getImageData(x, y, 1, 1);
+  cx.fillStyle = "rgb(" + data.data[0] + ", " + data.data[1] + ", " + data.data[2] + ")";
+  cx.strokeStyle = "rgb(" + data.data[0] + ", " + data.data[1] + ", " + data.data[2] + ")";
+};
+
+tools["Pick color"] = function (event, cx) {
+  let pos = relativePos(event, cx.canvas);
+  try {
+    changeColor(cx, pos.x, pos.y);
+  } catch (e) {
+    if (e instanceof SecurityError)
+      alert("Что то пошло не так" + e);
+    else
+      throw e;
+  }
+
+};
+
+
+// запуск
 let body = document.getElementById("paint")
 createPaint(body);
