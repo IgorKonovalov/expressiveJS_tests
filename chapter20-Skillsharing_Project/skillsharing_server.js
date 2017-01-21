@@ -1,16 +1,15 @@
-let http = require("http");
-let Router = require("./router");
-let ecstatic = require("ecstatic");
+var http = require("http");
+var Router = require("./router");
+var ecstatic = require("ecstatic");
 
-let fileServer = ecstatic({root: "./public"});
-let router = new Router();
+var fileServer = ecstatic({root: "./public"});
+var router = new Router();
 
-let server = http.createServer(function(request, response) {
+http.createServer(function(request, response) {
   if (!router.resolve(request, response))
     fileServer(request, response);
-}).listen(8000, function() { // вторым аргументом мы передаем функцию, вызываемую при успехе
-    let port = server.address().port;
-    console.log('Server listening on port %s.', port);
+}).listen(8000, function() {
+    console.log('Express server listening on port 8000');
 });
 
 function respond(response, status, data, type) {
@@ -25,7 +24,7 @@ function respondJSON(response, status, data) {
           "application/json");
 }
 
-let talks = Object.create(null);
+var talks = Object.create(null);
 
 router.add("GET", /^\/talks\/([^\/]+)$/,
            function(request, response, title) {
@@ -45,12 +44,12 @@ router.add("DELETE", /^\/talks\/([^\/]+)$/,
 });
 
 function readStreamAsJSON(stream, callback) {
-  let data = "";
+  var data = "";
   stream.on("data", function(chunk) {
     data += chunk;
   });
   stream.on("end", function() {
-    let result, error;
+    var result, error;
     try { result = JSON.parse(data); }
     catch (e) { error = e; }
     callback(error, result);
@@ -107,18 +106,18 @@ function sendTalks(talks, response) {
 }
 
 router.add("GET", /^\/talks$/, function(request, response) {
-  let query = require("url").parse(request.url, true).query;
+  var query = require("url").parse(request.url, true).query;
   if (query.changesSince == null) {
-    let list = [];
-    for (let title in talks)
+    var list = [];
+    for (var title in talks)
       list.push(talks[title]);
     sendTalks(list, response);
   } else {
-    let since = Number(query.changesSince);
+    var since = Number(query.changesSince);
     if (isNaN(since)) {
       respond(response, 400, "Invalid parameter");
     } else {
-      let changed = getChangedTalks(since);
+      var changed = getChangedTalks(since);
       if (changed.length > 0)
          sendTalks(changed, response);
       else
@@ -127,13 +126,13 @@ router.add("GET", /^\/talks$/, function(request, response) {
   }
 });
 
-let waiting = [];
+var waiting = [];
 
 function waitForChanges(since, response) {
-  let waiter = {since: since, response: response};
+  var waiter = {since: since, response: response};
   waiting.push(waiter);
   setTimeout(function() {
-    let found = waiting.indexOf(waiter);
+    var found = waiting.indexOf(waiter);
     if (found > -1) {
       waiting.splice(found, 1);
       sendTalks([], response);
@@ -141,7 +140,7 @@ function waitForChanges(since, response) {
   }, 90 * 1000);
 }
 
-let changes = [];
+var changes = [];
 
 function registerChange(title) {
   changes.push({title: title, time: Date.now()});
@@ -152,12 +151,12 @@ function registerChange(title) {
 }
 
 function getChangedTalks(since) {
-  let found = [];
+  var found = [];
   function alreadySeen(title) {
     return found.some(function(f) {return f.title == title;});
   }
-  for (let i = changes.length - 1; i >= 0; i--) {
-    let change = changes[i];
+  for (var i = changes.length - 1; i >= 0; i--) {
+    var change = changes[i];
     if (change.time <= since)
       break;
     else if (alreadySeen(change.title))
