@@ -9,7 +9,7 @@ http.createServer(function(request, response) {
   if (!router.resolve(request, response))
     fileServer(request, response);
 }).listen(8000, function() {
-    console.log('Express server listening on port 8000');
+    console.log('server listening on port 8000');
 });
 
 function respond(response, status, data, type) {
@@ -26,16 +26,14 @@ function respondJSON(response, status, data) {
 
 var talks = Object.create(null);
 
-router.add("GET", /^\/talks\/([^\/]+)$/,
-           function(request, response, title) {
+router.add("GET", /^\/talks\/([^\/]+)$/, function(request, response, title) { // см роутер
   if (title in talks)
     respondJSON(response, 200, talks[title]);
   else
     respond(response, 404, "No talk '" + title + "' found");
 });
 
-router.add("DELETE", /^\/talks\/([^\/]+)$/,
-           function(request, response, title) {
+router.add("DELETE", /^\/talks\/([^\/]+)$/, function(request, response, title) {
   if (title in talks) {
     delete talks[title];
     registerChange(title);
@@ -59,8 +57,7 @@ function readStreamAsJSON(stream, callback) {
   });
 }
 
-router.add("PUT", /^\/talks\/([^\/]+)$/,
-           function(request, response, title) {
+router.add("PUT", /^\/talks\/([^\/]+)$/, function(request, response, title) { // добавление новой темы
   readStreamAsJSON(request, function(error, talk) {
     if (error) {
       respond(response, 400, error.toString());
@@ -79,8 +76,7 @@ router.add("PUT", /^\/talks\/([^\/]+)$/,
   });
 });
 
-router.add("POST", /^\/talks\/([^\/]+)\/comments$/,
-           function(request, response, title) {
+router.add("POST", /^\/talks\/([^\/]+)\/comments$/, function(request, response, title) {
   readStreamAsJSON(request, function(error, comment) {
     if (error) {
       respond(response, 400, error.toString());
